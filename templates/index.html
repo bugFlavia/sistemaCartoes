@@ -7,6 +7,11 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <script src='main.js'></script>
+    <style>
+        #datasParceladas {
+            display: none; /* Inicia oculto */
+        }
+    </style>
 </head>
 <body>
     <form action="/process" method="post">
@@ -15,14 +20,158 @@
         <br>
 
         <label for="tipoCompra">Selecione o tipo de compra:</label>
-        <input type="text" id="tipoCompra" name="tipoCompra" placeholder="Selecione o tipo de compra"/>
+        <select name="tipoCompra" id="tipoCompra">
+            <option value="Normal">Normal</option>
+            <option value="Liquidada">Liquidada</option>
+            <option value="Parcelada">Parcelada</option>
+        </select>
         <br>
 
+        <div id="datasParceladas">
+            <label for="numeroParcelas">Número de parcelas:</label>
+            <select name="numeroParcelas" id="numeroParcelas" onchange="calcularDatasParcelas()">
+                <option value="2">2 parcelas</option>
+                <option value="3">3 parcelas</option>
+                <option value="4">4 parcelas</option>
+                <option value="5">5 parcelas</option>
+                <option value="6">6 parcelas</option>
+            </select>
+            <br><br>
+
+            <p>Data inicial: <span id="dataInicial"></span></p>
+            <p>Data final: <span id="dataFinal"></span></p>
+            <p>Valor médio por parcela: R$ <span id="valorMedioParcela"></span></p>
+        </div>
+
         <label for="tipoPagamento">Selecione o tipo de pagamento:</label>
-        <input type="text" id="tipoPagamento" name="tipoPagamento" placeholder="Selecione o tipo de pagamento"/>
+        <select id="tipoPagamento" name="tipoPagamento">
+            <option value="Dinheiro">Dinheiro</option>
+            <option value="Cartão de crédito">Cartão de crédito</option>
+            <option value="Cartão de débito">Cartão de débito</option>
+        </select>
         <br>
+
+        <label for="numeroCartao" id="labelNumeroCartao" style="display: none;">Digite o número do cartão:</label>
+        <input type="text" id="numeroCartao" name="numeroCartao" placeholder="Digite o número do cartão" style="display:none"/>
+        <div id="bandeiraCartao"></div> 
+        <br>
+
+        <label for="cvc" id="labelCvc" style="display: none;">CVC:</label>
+        <input type="text" id="cvc" name="cvc" placeholder="Digite o CVC do cartão" maxlength="4" style="display: none;">
+        <br>
+
+        <label for="validadeCartao" id="labelValidadeCartao" style="display: none;">Data de Validade (MM/AAAA):</label>
+        <input type="text" id="validadeCartao" name="validadeCartao" placeholder="MM/AAAA" maxlength="7" style="display: none;">
+        <br>
+
 
         <button type="submit">Enviar</button>
     </form>
+
+    <script>
+        document.getElementById("tipoPagamento").addEventListener('change', function() {
+            let tipoPagamento = document.getElementById("tipoPagamento").value;
+            let numeroCartao = document.getElementById("numeroCartao");
+            let cvc = document.getElementById("cvc");
+            let validadeCartao = document.getElementById("validadeCartao");
+            let labelNumeroCartao = document.getElementById("labelNumeroCartao");
+            let labelCvc = document.getElementById("labelCvc");
+            let labelValidadeCartao = document.getElementById("labelValidadeCartao");
+            
+            if (tipoPagamento === "Cartão de crédito" || tipoPagamento === "Cartão de débito") {
+                numeroCartao.style.display = "block";
+                labelNumeroCartao.style.display = "block";
+                cvc.style.display = "block";
+                labelCvc.style.display = "block";
+                validadeCartao.style.display = "block";
+                labelValidadeCartao.style.display = "block";
+            } else {
+                numeroCartao.style.display = "none";
+                labelNumeroCartao.style.display = "none";
+                cvc.style.display = "none";
+                labelCvc.style.display = "none";
+                validadeCartao.style.display = "none";
+                labelValidadeCartao.style.display = "none";
+            }
+        });
+
+        document.getElementById("numeroCartao").addEventListener('input', function() {
+            var numeroCartao = document.getElementById("numeroCartao").value;
+
+
+            var numeroLimpo = numeroCartao.replace(/\D/g, '');
+
+            var bandeira = '';
+
+            if (/^4/.test(numeroLimpo)) {
+                bandeira = 'Visa';
+            } else if (/^5[1-5]/.test(numeroLimpo)) {  
+                bandeira = 'MasterCard';
+            } else if (/^3[47]/.test(numeroLimpo)) {
+                bandeira = 'American Express';
+            } else if (/^6(?:011|5)/.test(numeroLimpo)) {
+                bandeira = 'Discover';
+            } else {
+                bandeira = 'Desconhecida'; 
+            }
+        
+            document.getElementById("bandeiraCartao").innerText = "Bandeira do cartão: " + bandeira;
+});
+
+document.getElementById("validadeCartao").addEventListener('input', function() {
+    var validadeCartao = document.getElementById("validadeCartao").value.trim();
+
+    if (validadeCartao.length === 7) { 
+        var hoje = new Date();
+        var seisMesesDepois = new Date();
+        seisMesesDepois.setMonth(seisMesesDepois.getMonth() + 6);
+
+        var mes = parseInt(validadeCartao.substring(0, 2)) - 1; 
+        var ano = parseInt(validadeCartao.substring(3, 7));
+
+        var dataValidade = new Date(ano, mes + 1, 0);
+
+        if (dataValidade < seisMesesDepois) {
+            alert("Data de validade inválida. Insira uma data válida nos próximos 6 meses. ")
+            document.getElementById("validadeCartao").value = ""
+        } else {
+            document.getElementById("validadeCartao").classList.remove("invalid");
+        }
+    } else {
+        document.getElementById("validadeCartao").classList.remove("invalid");
+    }
+});
+
+        document.getElementById("tipoCompra").addEventListener('change', function() {
+            let tipoCompra = document.getElementById("tipoCompra").value;
+            let datasParceladas = document.getElementById("datasParceladas");
+
+            if (tipoCompra === "Parcelada") {
+                datasParceladas.style.display = "block";
+                calcularDatasParcelas();
+            } else {
+                datasParceladas.style.display = "none";
+            }
+        });
+
+        function calcularDatasParcelas() {
+            var numeroParcelas = parseInt(document.getElementById("numeroParcelas").value);
+            var valorCompra = parseFloat(document.getElementById("valorCompra").value);
+
+            var dataInicial = new Date();
+            var dataFinal = new Date(dataInicial);
+            dataFinal.setMonth(dataFinal.getMonth() + numeroParcelas);
+
+            var options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+            var dataInicialFormatada = dataInicial.toLocaleDateString('pt-BR', options);
+            var dataFinalFormatada = dataFinal.toLocaleDateString('pt-BR', options);
+
+            document.getElementById("dataInicial").innerText = dataInicialFormatada;
+            document.getElementById("dataFinal").innerText = dataFinalFormatada;
+
+            var valorMedioParcela = valorCompra / numeroParcelas;
+            document.getElementById("valorMedioParcela").innerText = valorMedioParcela.toFixed(2);
+        }
+    </script>
 </body>
 </html>
