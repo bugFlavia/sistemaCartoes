@@ -12,15 +12,7 @@ def process():
     tipoCompra = request.form['tipoCompra']
     tipoPagamento = request.form['tipoPagamento']
     
-    print(f"Valor da compra: {valorCompra}")
-    print(f"Tipo de compra: {tipoCompra}")
-    print(f"Tipo de pagamento: {tipoPagamento}")
-    
-    return f"""
-    Valor da compra recebido: {valorCompra}<br>
-    Tipo de compra recebido: {tipoCompra}<br>
-    Tipo de pagamento recebido: {tipoPagamento}
-    """
+    return render_template('process.html', valorCompra=valorCompra, tipoCompra=tipoCompra, tipoPagamento=tipoPagamento)
 
 if __name__ == '__main__':
     app.run(debug=True)
