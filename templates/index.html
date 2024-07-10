@@ -3,32 +3,163 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Page Title</title>
+    <title>Sistema de compras</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='style.css'>
     <script src='main.js'></script>
     <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+	        background-color: #E9D8F2;
+            width: 100%;
+        }
+
+        nav{
+            background-size: 9%;
+            margin-top: 0px;
+            background-color: #8858C7;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /*margin-bottom: 10px;
+            box-shadow: 10px 5px 5px pink;*/
+        }
+        nav ul{
+            list-style-type: none;
+        }
+
+        nav ul li a{
+            color:white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 25px;
+        }
+
+        nav ul li a:hover{
+            text-decoration: underline;
+        }
+
+        form{       
+            margin: 50px 0px 50px 0px;
+            background-color: white;
+            margin-left: auto;
+            padding-bottom: 30px;
+            margin-right: auto;
+            width: 70%;
+            border-radius: 5px;
+            box-shadow: 0px 5px 70px -12px #9C90DC;
+        }
+
+        form h1{
+            color: #8858C7;
+            padding: 50px 0px 50px 0px;
+            text-align: center;
+        }
+
+        form label{
+            color: #8858C7;
+            font-size: 20px;
+            font-weight: bold;
+            padding-left: 200px;
+        }
+
+        form input, select{     
+            margin: 10px auto; /* Altere o margin-top e margin-bottom para auto */
+            width: 60%;
+            padding-left: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 5px 5px 5px #DCD2F0;
+            border: none;
+            height: 30px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        form button{
+            margin: 15px auto; /* Centraliza o botão horizontalmente */
+            background-image: linear-gradient(to bottom, #9C90DC, #DCD2F0, #9AACDD);
+            height: 50px;
+            width: 60%;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: block; /* Certifique-se de que o botão é exibido como bloco */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        form button:hover{      
+            background-color: #CCC0EA;
+            background-image: none;
+        }
+
+        #datasParceladas{
+            margin-bottom: 30px;
+        }
+
+        #datasParceladas p{
+            padding-left: 200px;
+        }
+
+        #datasParceladas span{
+            font-weight: bold;
+        }
+
+        footer{
+            margin-top: 50px;
+            background-color: #8858C7;
+            height: 200px;
+            position: relative;
+            bottom: 0;
+            padding-left: 250px;
+        }
+
+        footer h1{
+            text-align: right;
+            position: absolute;
+            top: 50%;
+            transform: translate(50%, -50%);
+            color: white;
+        }
         #datasParceladas {
             display: none; /* Inicia oculto */
         }
     </style>
 </head>
 <body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">SISTEMA DE COMPRAS</a></li>
+            </ul>
+        </nav>
+    </header>
     <form action="/process" method="post">
-        <label for="valorCompra">Digite o valor da compra:</label>
-        <input type="number" id="valorCompra" name="valorCompra" placeholder="Digite o valor da compra"/>
-        <br>
 
-        <label for="tipoCompra">Selecione o tipo de compra:</label>
+        <h1>Preencha os dados da compra:</h1>
+
+        <label for="valorCompra">Digite o valor da compra:</label><br/>
+        <input type="number" id="valorCompra" name="valorCompra" placeholder="Digite o valor da compra"/>
+        <br/>
+
+        <label for="tipoCompra">Selecione o tipo de compra:</label><br/>
         <select name="tipoCompra" id="tipoCompra">
             <option value="Normal">Normal</option>
             <option value="Liquidada">Liquidada</option>
             <option value="Parcelada">Parcelada</option>
         </select>
-        <br>
+        <br/>
 
         <div id="datasParceladas">
-            <label for="numeroParcelas">Número de parcelas:</label>
+            <label for="numeroParcelas">Número de parcelas:</label><br/>
             <select name="numeroParcelas" id="numeroParcelas" onchange="calcularDatasParcelas()">
                 <option value="2">2 parcelas</option>
                 <option value="3">3 parcelas</option>
@@ -36,37 +167,41 @@
                 <option value="5">5 parcelas</option>
                 <option value="6">6 parcelas</option>
             </select>
-            <br><br>
+            <br/>
 
             <p>Data inicial: <span id="dataInicial"></span></p>
             <p>Data final: <span id="dataFinal"></span></p>
             <p>Valor médio por parcela: R$ <span id="valorMedioParcela"></span></p>
         </div>
 
-        <label for="tipoPagamento">Selecione o tipo de pagamento:</label>
+        <label for="tipoPagamento">Selecione o tipo de pagamento:</label><br/>
         <select id="tipoPagamento" name="tipoPagamento">
             <option value="Dinheiro">Dinheiro</option>
             <option value="Cartão de crédito">Cartão de crédito</option>
             <option value="Cartão de débito">Cartão de débito</option>
         </select>
-        <br>
+        <br/>
 
-        <label for="numeroCartao" id="labelNumeroCartao" style="display: none;">Digite o número do cartão:</label>
+        <label for="numeroCartao" id="labelNumeroCartao" style="display: none;">Digite o número do cartão:</label><br/>
         <input type="text" id="numeroCartao" name="numeroCartao" placeholder="Digite o número do cartão" style="display:none"/>
         <div id="bandeiraCartao"></div> 
-        <br>
+        <br/>
 
-        <label for="cvc" id="labelCvc" style="display: none;">CVC:</label>
+        <label for="cvc" id="labelCvc" style="display: none;">CVC:</label><br/>
         <input type="text" id="cvc" name="cvc" placeholder="Digite o CVC do cartão" maxlength="4" style="display: none;">
-        <br>
+        <br/>
 
-        <label for="validadeCartao" id="labelValidadeCartao" style="display: none;">Data de Validade (MM/AAAA):</label>
+        <label for="validadeCartao" id="labelValidadeCartao" style="display: none;">Data de Validade (MM/AAAA):</label><br/>
         <input type="text" id="validadeCartao" name="validadeCartao" placeholder="MM/AAAA" maxlength="7" style="display: none;">
-        <br>
+        <br/>
 
 
         <button type="submit">Enviar</button>
     </form>
+
+    <footer>
+        <h1>Teste</h1>
+    </footer>
 
     <script>
         document.getElementById("tipoPagamento").addEventListener('change', function() {
