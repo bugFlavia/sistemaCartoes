@@ -68,6 +68,10 @@
         <p>Valor da compra recebido: {{ valorCompra }}</p>
         <p>Tipo de compra recebido: {{ tipoCompra }}</p>
         <p>Tipo de pagamento recebido: {{ tipoPagamento }}</p>
+    {% if tipoCompra == 'Parcelada' %}
+        <p>Número de Parcelas: {{ numeroParcelas }}</p>
+        <p>Valor Total com Juros: R$ {{ valorTotalComJuros }}</p>
+    {% endif %}
     </div>
 </body>
 </html>
